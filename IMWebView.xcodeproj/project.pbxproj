@@ -26,6 +26,9 @@
 		47A1048316966F440061EAF7 /* inject-jquery.js in Sources */ = {isa = PBXBuildFile; fileRef = 47A1048216966F440061EAF7 /* inject-jquery.js */; };
 		47A1048416966F440061EAF7 /* inject-jquery.js in Sources */ = {isa = PBXBuildFile; fileRef = 47A1048216966F440061EAF7 /* inject-jquery.js */; };
 		47A10485169677FD0061EAF7 /* inject-jquery.js in Resources */ = {isa = PBXBuildFile; fileRef = 47A1048216966F440061EAF7 /* inject-jquery.js */; };
+		47A1048716967AD70061EAF7 /* document-readiness.js in Sources */ = {isa = PBXBuildFile; fileRef = 47A1048616967AD70061EAF7 /* document-readiness.js */; };
+		47A1048816967AD70061EAF7 /* document-readiness.js in Sources */ = {isa = PBXBuildFile; fileRef = 47A1048616967AD70061EAF7 /* document-readiness.js */; };
+		47A1048916967DF00061EAF7 /* document-readiness.js in Resources */ = {isa = PBXBuildFile; fileRef = 47A1048616967AD70061EAF7 /* document-readiness.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +64,7 @@
 		47A1047D169665030061EAF7 /* IMWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMWebView.h; sourceTree = "<group>"; };
 		47A1047E169665030061EAF7 /* IMWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMWebView.m; sourceTree = "<group>"; };
 		47A1048216966F440061EAF7 /* inject-jquery.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "inject-jquery.js"; sourceTree = "<group>"; };
+		47A1048616967AD70061EAF7 /* document-readiness.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "document-readiness.js"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +144,7 @@
 				47A10459169664770061EAF7 /* Default.png */,
 				47A1045B169664770061EAF7 /* Default@2x.png */,
 				47A1045D169664770061EAF7 /* Default-568h@2x.png */,
+				47A1048616967AD70061EAF7 /* document-readiness.js */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -239,6 +244,7 @@
 				47A1045C169664770061EAF7 /* Default@2x.png in Resources */,
 				47A1045E169664770061EAF7 /* Default-568h@2x.png in Resources */,
 				47A10485169677FD0061EAF7 /* inject-jquery.js in Resources */,
+				47A1048916967DF00061EAF7 /* document-readiness.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,6 +283,7 @@
 				47A10458169664770061EAF7 /* AppDelegate.m in Sources */,
 				47A1047F169665030061EAF7 /* IMWebView.m in Sources */,
 				47A1048316966F440061EAF7 /* inject-jquery.js in Sources */,
+				47A1048716967AD70061EAF7 /* document-readiness.js in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,6 +294,7 @@
 				47A10473169664770061EAF7 /* IMWebViewTests.m in Sources */,
 				47A10480169665030061EAF7 /* IMWebView.m in Sources */,
 				47A1048416966F440061EAF7 /* inject-jquery.js in Sources */,
+				47A1048816967AD70061EAF7 /* document-readiness.js in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

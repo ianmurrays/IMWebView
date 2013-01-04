@@ -47,30 +47,47 @@
 
 #pragma mark - DOM Manipulation / Interaction
 
-- (void)injectJqueryWithCallBack:(IMWebViewCallback)callback
+- (void)injectScriptWithName:(NSString *)name
 {
-    NSString *jqueryInjectorPath = [[NSBundle mainBundle] pathForResource:@"inject-jquery" ofType:@"js"];
-    NSAssert(jqueryInjectorPath != nil, @"jqueryInjectorPath should not have been nil");
-    NSString *jqueryInjector = [NSString stringWithContentsOfFile:jqueryInjectorPath encoding:NSUTF8StringEncoding error:nil];
+    NSString *scriptPath = [[NSBundle mainBundle] pathForResource:name ofType:@"js"];
+    NSAssert(scriptPath != nil, @"scriptPath %@.js should not have been nil", name);
+    NSString *scriptToInject = [NSString stringWithContentsOfFile:scriptPath encoding:NSUTF8StringEncoding error:nil];
     
-    [self.webView stringByEvaluatingJavaScriptFromString:jqueryInjector];
-    
-    [self pollForJqueryWithCallback:callback];
+    [self.webView stringByEvaluatingJavaScriptFromString:scriptToInject];
 }
 
-- (void)pollForJqueryWithCallback:(IMWebViewCallback)callback
+- (void)pollForState:(NSString *)state withCallback:(IMWebViewCallback)callback
 {
     // FIXME: if we never inject jquery we'll get trapped in a recursion loop.
-    NSString *checkJquery = @"document.IMWebViewJqueryLoaded";
-    if ([@"true" caseInsensitiveCompare:[self.webView stringByEvaluatingJavaScriptFromString:checkJquery]] == NSOrderedSame)
+    if ([@"true" caseInsensitiveCompare:[self.webView stringByEvaluatingJavaScriptFromString:state]] == NSOrderedSame)
     {
         callback();
     }
     else
     {
         // Poll in .5 seconds more
-        [self performSelector:@selector(pollForJqueryWithCallback:) withObject:callback afterDelay:0.5];
+        int64_t delayInSeconds = 0.5;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [self pollForState:state withCallback:callback];
+        });
     }
+}
+
+- (void)injectJqueryWithCallBack:(IMWebViewCallback)callback
+{
+    [self injectScriptWithName:@"inject-jquery"];
+    
+    // Wait until jQuery is loaded and then poll for document readiness.
+    [self pollForState:@"document.IMWebViewJqueryLoaded" withCallback:^{
+        [self injectDocumentReadinessScriptWithCallback:callback];
+    }];
+}
+
+- (void)injectDocumentReadinessScriptWithCallback:(IMWebViewCallback)callback
+{
+    [self injectScriptWithName:@"document-readiness"];
+    [self pollForState:@"document.IMWebViewDocumentReady" withCallback:callback];
 }
 
 #pragma mark - Other Methods
@@ -106,18 +123,15 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
+    NSLog(@"IMWebView finished loading %@", self.currentURL);
     [self injectJqueryWithCallBack:^{
-        // Did we actually inject the thing?
-        
-        NSLog(@"html? \n\n%@", [self.webView stringByEvaluatingJavaScriptFromString:@"$imWebViewJquery('body').html()"]);
-        
         self.callbackBlock();
     }];
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView
 {
-    NSLog(@"IMWebView stared loading URL: %@", webView.request.URL);
+    NSLog(@"IMWebView stared loading");
 }
 
 @end
