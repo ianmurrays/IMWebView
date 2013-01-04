@@ -21,6 +21,11 @@
 		47A10468169664770061EAF7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47A10449169664770061EAF7 /* Foundation.framework */; };
 		47A10470169664770061EAF7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47A1046E169664770061EAF7 /* InfoPlist.strings */; };
 		47A10473169664770061EAF7 /* IMWebViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 47A10472169664770061EAF7 /* IMWebViewTests.m */; };
+		47A1047F169665030061EAF7 /* IMWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47A1047E169665030061EAF7 /* IMWebView.m */; };
+		47A10480169665030061EAF7 /* IMWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47A1047E169665030061EAF7 /* IMWebView.m */; };
+		47A1048316966F440061EAF7 /* inject-jquery.js in Sources */ = {isa = PBXBuildFile; fileRef = 47A1048216966F440061EAF7 /* inject-jquery.js */; };
+		47A1048416966F440061EAF7 /* inject-jquery.js in Sources */ = {isa = PBXBuildFile; fileRef = 47A1048216966F440061EAF7 /* inject-jquery.js */; };
+		47A10485169677FD0061EAF7 /* inject-jquery.js in Resources */ = {isa = PBXBuildFile; fileRef = 47A1048216966F440061EAF7 /* inject-jquery.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +58,9 @@
 		47A1046F169664770061EAF7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		47A10471169664770061EAF7 /* IMWebViewTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IMWebViewTests.h; sourceTree = "<group>"; };
 		47A10472169664770061EAF7 /* IMWebViewTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IMWebViewTests.m; sourceTree = "<group>"; };
+		47A1047D169665030061EAF7 /* IMWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMWebView.h; sourceTree = "<group>"; };
+		47A1047E169665030061EAF7 /* IMWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMWebView.m; sourceTree = "<group>"; };
+		47A1048216966F440061EAF7 /* inject-jquery.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "inject-jquery.js"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +123,8 @@
 				47A10456169664770061EAF7 /* AppDelegate.h */,
 				47A10457169664770061EAF7 /* AppDelegate.m */,
 				47A1044E169664770061EAF7 /* Supporting Files */,
+				47A1047D169665030061EAF7 /* IMWebView.h */,
+				47A1047E169665030061EAF7 /* IMWebView.m */,
 			);
 			path = IMWebView;
 			sourceTree = "<group>";
@@ -122,6 +132,7 @@
 		47A1044E169664770061EAF7 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				47A1048216966F440061EAF7 /* inject-jquery.js */,
 				47A1044F169664770061EAF7 /* IMWebView-Info.plist */,
 				47A10450169664770061EAF7 /* InfoPlist.strings */,
 				47A10453169664770061EAF7 /* main.m */,
@@ -227,6 +238,7 @@
 				47A1045A169664770061EAF7 /* Default.png in Resources */,
 				47A1045C169664770061EAF7 /* Default@2x.png in Resources */,
 				47A1045E169664770061EAF7 /* Default-568h@2x.png in Resources */,
+				47A10485169677FD0061EAF7 /* inject-jquery.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +275,8 @@
 			files = (
 				47A10454169664770061EAF7 /* main.m in Sources */,
 				47A10458169664770061EAF7 /* AppDelegate.m in Sources */,
+				47A1047F169665030061EAF7 /* IMWebView.m in Sources */,
+				47A1048316966F440061EAF7 /* inject-jquery.js in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,6 +285,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				47A10473169664770061EAF7 /* IMWebViewTests.m in Sources */,
+				47A10480169665030061EAF7 /* IMWebView.m in Sources */,
+				47A1048416966F440061EAF7 /* inject-jquery.js in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

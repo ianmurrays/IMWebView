@@ -3,10 +3,17 @@
 //  IMWebViewTests
 //
 //  Created by Ian Murray on 03-01-13.
-//  Copyright (c) 2013 Skout. All rights reserved.
+//  Copyright (c) 2013 Ian Murray. All rights reserved.
 //
 
 #import "IMWebViewTests.h"
+#import "IMWebView.h"
+
+@interface IMWebViewTests ()
+
+@property (nonatomic,strong) IMWebView *webView;
+
+@end
 
 @implementation IMWebViewTests
 
@@ -14,7 +21,7 @@
 {
     [super setUp];
     
-    // Set-up code here.
+    self.webView = [[IMWebView alloc] init];
 }
 
 - (void)tearDown
@@ -22,11 +29,15 @@
     // Tear-down code here.
     
     [super tearDown];
+    
+    self.webView = nil;
 }
 
-- (void)testExample
+- (void)testJqueryInjection
 {
-    STFail(@"Unit tests are not implemented yet in IMWebViewTests");
+    [self.webView goToURL:[NSURL URLWithString:@"https://dl.dropbox.com/u/1916643/SkoutLandingPage/index.html"] withCallback:^{
+        NSLog(@"impressive");
+    }];
 }
 
 @end

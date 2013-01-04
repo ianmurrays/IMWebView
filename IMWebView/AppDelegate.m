@@ -3,10 +3,17 @@
 //  IMWebView
 //
 //  Created by Ian Murray on 03-01-13.
-//  Copyright (c) 2013 Skout. All rights reserved.
+//  Copyright (c) 2013 Ian Murray. All rights reserved.
 //
 
 #import "AppDelegate.h"
+#import "IMWebView.h"
+
+@interface AppDelegate ()
+
+@property (nonatomic,strong) IMWebView *webView;
+
+@end
 
 @implementation AppDelegate
 
@@ -15,6 +22,12 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
+    
+    self.webView = [[IMWebView alloc] init];
+    [self.webView goToURL:[NSURL URLWithString:@"https://dl.dropbox.com/u/1916643/SkoutLandingPage/index.html"] withCallback:^{
+        NSLog(@"dkjfhsd");
+    }];
+    
     [self.window makeKeyAndVisible];
     return YES;
 }
