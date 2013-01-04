@@ -24,8 +24,22 @@
     self.window.backgroundColor = [UIColor whiteColor];
     
     self.webView = [[IMWebView alloc] init];
-    [self.webView goToURL:[NSURL URLWithString:@"https://dl.dropbox.com/u/1916643/SkoutLandingPage/index.html"] withCallback:^{
-        NSLog(@"dkjfhsd");
+    
+    self.webView.webView.frame = self.window.bounds;
+    [self.window addSubview:self.webView.webView];
+
+    [self.webView startWithURL:[NSURL URLWithString:@"http://example.com"] withCallback:^{
+        [self.webView fillFieldWithSelector:@"input#user_email" withValue:@"email@example.com"];
+        [self.webView fillFieldWithSelector:@"input#user_password" withValue:@"invalid_password"];
+        [self.webView clickElementWithSelector:@"input[type=submit]"];
+    }];
+    
+    [self.webView thenExecuteBlock:^{
+        [self.webView clickElementWithSelector:@"a.group"];
+    }];
+    
+    [self.webView runWithCallback:^{
+        NSLog(@"Finished: %@", [self.webView getHTMLInSelector:@"html"]);
     }];
     
     [self.window makeKeyAndVisible];

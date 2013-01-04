@@ -12,6 +12,7 @@ typedef void (^IMWebViewCallback)();
 
 @interface IMWebView : NSObject
 
+@property (nonatomic,strong) UIWebView *webView;
 @property (nonatomic,readonly) BOOL loading;
 @property (nonatomic,readonly) NSURL *currentURL;
 
@@ -56,8 +57,49 @@ typedef void (^IMWebViewCallback)();
 - (BOOL)clickElementWithSelector:(NSString *)selector;
 //- (BOOL)clickLabel:(NSString *)label;
 //- (BOOL)clickLabel:(NSString *)label withTag:(NSString *)tag;
+
+/**
+ Fills a textfield or textarea with the given text.
+ 
+ @param selector The field's selector
+ @param string The value to set on the field
+ 
+ @return Whether or not the value was set. It returns NO for invalid selectors or if a field is not a text or textarea.
+ */
 - (BOOL)fillFieldWithSelector:(NSString *)selector withValue:(NSString *)string;
+
+/**
+ Sets a checkbox to the specified state (checked or not checked).
+ 
+ @param selector The checkbox' selector
+ @param checked Checked or not checked
+ 
+ @return Whether the checkbox was actually changed.
+ */
+- (BOOL)setCheckboxWithSelector:(NSString *)selector checked:(BOOL)checked;
+
+/**
+ Sets a select tag to the given value. For example, if there's a select like this:
+ 
+ <select class="the-select">
+    <option value="first">First Value!</option>
+    <option value="second">Second Value!</option>
+ </select>
+ 
+ Calling setSelectWithSelector with value "second" will select the second option.
+ If the option does not have the value tag set, then the content becomes its value.
+ 
+ Fiddle with this jsfiddle (pun intended) to test that out: http://jsfiddle.net/nick_craver/RB5wU/
+ 
+ @param selector The select's selector
+ @param value The value of the option to set
+ 
+ @return Whether or not the select was actually performed.
+ */
+- (BOOL)setSelectWithSelector:(NSString *)selector toValue:(NSString *)value;
+
 - (BOOL)fillFormWithSelector:(NSString *)selector options:(NSDictionary *)options submit:(BOOL)submit;
+
 - (NSString *)getHTMLInSelector:(NSString *)selector;
 
 @end

@@ -8,6 +8,9 @@
 
 #import "IMWebView.h"
 
+/**
+ Defines operation types to enqueue
+ */
 typedef enum
 {
     IMWebViewOperationNavigate,
@@ -15,9 +18,20 @@ typedef enum
     IMWebViewOperationRun
 } IMWebViewOperation;
 
-@interface IMWebView () <UIWebViewDelegate>
+/**
+ Defines the different form fields
+ */
+typedef enum
+{
+    IMWebViewInputTypeUnknown,
+    IMWebViewInputTypeText,
+    IMWebViewInputTypeTextarea,
+    IMWebViewInputTypeCheckbox,
+    IMWebViewInputTypeRadio,
+    IMWebViewInputTypeSelect
+} IMWebViewInputType;
 
-@property (nonatomic,strong) UIWebView *webView;
+@interface IMWebView () <UIWebViewDelegate>
 
 @property (nonatomic,copy) IMWebViewCallback callbackBlock;
 
@@ -40,6 +54,7 @@ typedef enum
     {
         self.webView = [[UIWebView alloc] init];
         self.webView.delegate = self;
+        self.operationsQueue = [NSMutableArray array];
     }
     
     return self;
@@ -63,36 +78,88 @@ typedef enum
 
 #pragma mark - Navigation
 
-- (void)goToURL:(NSURL *)url withCallback:(IMWebViewCallback)callback DEPRECATED_ATTRIBUTE
-{
-    self.callbackBlock = callback;
-    
-    [self.webView loadRequest:[NSURLRequest requestWithURL:url]];
-}
-
 - (void)startWithURL:(NSURL *)url withCallback:(IMWebViewCallback)callback
 {
-    [self enqueueOperation:IMWebViewOperationNavigate withOptions:@{@"url" : url}];
+    // Create an empty block in case we're passed nil.
+    callback = (callback == nil ? ^{} : callback);
+    
+    [self enqueueOperation:IMWebViewOperationNavigate withOptions:@{@"url" : url, @"block" : [callback copy]}];
 }
 
 - (void)thenExecuteBlock:(IMWebViewCallback)callback
 {
+    // Create an empty block in case we're passed nil.
+    callback = (callback == nil ? ^{} : callback);
+    
     [self enqueueOperation:IMWebViewOperationExecuteBlock withOptions:@{@"block" : [callback copy]}];
 }
 
 - (void)runWithCallback:(IMWebViewCallback)callback
 {
-    [self enqueueOperation:IMWebViewOperationRun withOptions:@{@"callback" : [callback copy]}];
+    // Create an empty block in case we're passed nil.
+    callback = (callback == nil ? ^{} : callback);
+    
+    [self enqueueOperation:IMWebViewOperationRun withOptions:@{@"block" : [callback copy]}];
+    
+    NSDictionary *operation = self.operationsQueue[0];
+    NSURLRequest *request = [NSURLRequest requestWithURL:operation[@"options"][@"url"]];
+    [self.webView loadRequest:request]; 
 }
 
 #pragma mark - Public DOM Manipulation / Interaction Methods
 
 - (BOOL)selectorExists:(NSString *)selector
 {
-    NSString *stringToEvaluate = [NSString stringWithFormat:@"$imWebViewJquery('%@').length;", selector];
+    NSString *stringToEvaluate = [NSString stringWithFormat:@"$imWebViewJquery('%@').length", selector];
     NSString *response = [self.webView stringByEvaluatingJavaScriptFromString:stringToEvaluate];
     
     return response.integerValue > 0;
+}
+
+- (IMWebViewInputType)inputTypeForSelector:(NSString *)selector
+{
+    NSString *stringToEvaluate = [NSString stringWithFormat:@"$imWebViewJquery('%@')[0].tagName", selector];
+    NSString *response = [self.webView stringByEvaluatingJavaScriptFromString:stringToEvaluate];
+    
+    if ([response caseInsensitiveCompare:@"input"] == NSOrderedSame)
+    {
+        // text input, checkbox or radio?
+        stringToEvaluate = [NSString stringWithFormat:@"$imWebViewJquery('%@').first().attr('type')", selector];
+        response = [self.webView stringByEvaluatingJavaScriptFromString:stringToEvaluate];
+        
+        if ([response caseInsensitiveCompare:@"text"] == NSOrderedSame ||
+            [response caseInsensitiveCompare:@"password"] == NSOrderedSame ||
+            [response caseInsensitiveCompare:@"email"] == NSOrderedSame ||
+            [response caseInsensitiveCompare:@"number"] == NSOrderedSame)
+        {
+            return IMWebViewInputTypeText;
+        }
+        else if ([response caseInsensitiveCompare:@"checkbox"] == NSOrderedSame)
+        {
+            return IMWebViewInputTypeCheckbox;
+        }
+        else if ([response caseInsensitiveCompare:@"radio"] == NSOrderedSame)
+        {
+            return IMWebViewInputTypeRadio;
+        }
+        else
+        {
+            NSLog(@"Unkown input field: %@ (jquery: %@)", response, stringToEvaluate);
+            return IMWebViewInputTypeUnknown;
+        }
+    }
+    else if ([response caseInsensitiveCompare:@"select"] == NSOrderedSame)
+    {
+        return IMWebViewInputTypeSelect;
+    }
+    else if ([response caseInsensitiveCompare:@"textarea"] == NSOrderedSame)
+    {
+        return IMWebViewInputTypeTextarea;
+    }
+    else
+    {
+        return IMWebViewInputTypeUnknown;
+    }
 }
 
 - (BOOL)clickElementWithSelector:(NSString *)selector
@@ -112,11 +179,64 @@ typedef enum
 {
     if ([self selectorExists:selector])
     {
-        // FIXME: Need to escape `string`
-        NSString *stringToEvaluate = [NSString stringWithFormat:@"$imWebViewJquery('%@').val('%@');", selector, string];
+        // First, let's check what kind of field it is
+        IMWebViewInputType inputType = [self inputTypeForSelector:selector];
+        NSString *setValueStatement;
+        
+        switch (inputType)
+        {
+            case IMWebViewInputTypeText:
+                setValueStatement = [NSString stringWithFormat:@"$imWebViewJquery('%@').val('%@');", selector, string];
+                break;
+            
+            case IMWebViewInputTypeTextarea:
+                setValueStatement = [NSString stringWithFormat:@"$imWebViewJquery('%@').html('%@')", selector, string];
+                break;
+                
+            default:
+                return NO;
+                break;
+        }
+        
+        NSAssert([self.webView stringByEvaluatingJavaScriptFromString:setValueStatement], @"stringByEvaluatingJavaScriptFromString (%@) failed", setValueStatement);
+        return YES;
     }
     
     return NO;
+}
+
+- (BOOL)setCheckboxWithSelector:(NSString *)selector checked:(BOOL)checked
+{
+    if ([self selectorExists:selector] &&
+        [self inputTypeForSelector:selector] == IMWebViewInputTypeCheckbox)
+    {
+        NSString *setCheckboxString = [NSString stringWithFormat:@"$imWebViewJquery('%@').first().attr('checked', %@')", selector, (checked ? @"true" : @"false")];
+        NSAssert([self.webView stringByEvaluatingJavaScriptFromString:setCheckboxString], @"stringByEvaluatingJavaScriptFromString (%@) failed", setCheckboxString);
+
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (BOOL)setSelectWithSelector:(NSString *)selector toValue:(NSString *)value
+{
+    if ([self selectorExists:selector] &&
+        [self inputTypeForSelector:selector] == IMWebViewInputTypeSelect)
+    {
+        NSString *setSelectString = [NSString stringWithFormat:@"$imWebViewJquery('%@').first().val('%@')", selector, value];
+        NSAssert([self.webView stringByEvaluatingJavaScriptFromString:setSelectString], @"stringByEvaluatingJavaScriptFromString (%@) failed", setSelectString);
+        
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (NSString *)getHTMLInSelector:(NSString *)selector
+{
+    NSString *selectorString = [NSString stringWithFormat:@"$imWebViewJquery('%@').html()", selector];
+    return [self.webView stringByEvaluatingJavaScriptFromString:selectorString];
 }
 
 #pragma mark - Private DOM Manipulation / Interaction Methods
@@ -192,14 +312,19 @@ typedef enum
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
-    NSLog(@"IMWebView failed loading with error: %@", error);
+    NSLog(@"IMWebView failed loading %@ with error: %@", self.currentURL, error);
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
     NSLog(@"IMWebView finished loading %@", self.currentURL);
     [self injectJqueryWithCallBack:^{
-        self.callbackBlock();
+        // Execute the first operation on the queue
+        NSDictionary *operation = self.operationsQueue[0];
+        [self.operationsQueue removeObjectAtIndex:0];
+        
+        IMWebViewCallback callback = operation[@"options"][@"block"];
+        callback();
     }];
 }
 
