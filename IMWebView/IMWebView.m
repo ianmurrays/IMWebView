@@ -106,6 +106,16 @@ typedef enum
     [self.webView loadRequest:request]; 
 }
 
+- (void)goBack
+{
+    [self.webView goBack];
+}
+
+- (void)goForward
+{
+    [self.webView goForward];
+}
+
 #pragma mark - Public DOM Manipulation / Interaction Methods
 
 - (BOOL)selectorExists:(NSString *)selector
@@ -173,6 +183,24 @@ typedef enum
     }
     
     return NO;
+}
+
+- (BOOL)clickElementWithSelector:(NSString *)selector andContent:(NSString *)content
+{
+    if ([self selectorExists:selector])
+    {
+        NSString *stringToEvaluate = [NSString stringWithFormat:@"$imWebViewJquery('%@').each(function(){if ($(this).text().match('%@') || $(this).val().match('%@')) $(this)[0].click(); });", selector, content, content];
+        [self.webView stringByEvaluatingJavaScriptFromString:stringToEvaluate];
+        
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (void)clickElementWithContent:(NSString *)content
+{
+    [self clickElementWithSelector:@"a, button, input[type=button], input[type=submit]" andContent:content];
 }
 
 - (BOOL)fillFieldWithSelector:(NSString *)selector withValue:(NSString *)string

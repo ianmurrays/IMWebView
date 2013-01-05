@@ -30,12 +30,12 @@
 
     [self.webView startWithURL:[NSURL URLWithString:@"http://example.com"] withCallback:^{
         [self.webView fillFieldWithSelector:@"input#user_email" withValue:@"email@example.com"];
-        [self.webView fillFieldWithSelector:@"input#user_password" withValue:@"invalid_password"];
-        [self.webView clickElementWithSelector:@"input[type=submit]"];
+        [self.webView fillFieldWithSelector:@"input#user_password" withValue:@"password"];
+        [self.webView clickElementWithContent:@"Sign in"];
     }];
     
     [self.webView thenExecuteBlock:^{
-        [self.webView clickElementWithSelector:@"a.group"];
+        [self.webView clickElementWithSelector:@"a.group" andContent:@"Link"];
     }];
     
     [self.webView runWithCallback:^{

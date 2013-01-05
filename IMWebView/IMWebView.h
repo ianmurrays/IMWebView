@@ -13,18 +13,16 @@ typedef void (^IMWebViewCallback)();
 @interface IMWebView : NSObject
 
 @property (nonatomic,strong) UIWebView *webView;
-@property (nonatomic,readonly) BOOL loading;
-@property (nonatomic,readonly) NSURL *currentURL;
 
 /**
- Navigates to the specified URL.
- 
- @param url The url to navigate to
- @param callback Block to be invoked when the page is ready to be interacted with.
+ Whether or not the web view is loading
  */
-- (void)goToURL:(NSURL *)url withCallback:(IMWebViewCallback)callback DEPRECATED_ATTRIBUTE;
+@property (nonatomic,readonly) BOOL loading;
 
-// TODO: Document these methods!
+/**
+ The current URL of the web view
+ */
+@property (nonatomic,readonly) NSURL *currentURL;
 
 /**
  Starts a new request and calls the callback when the request is done.
@@ -51,12 +49,44 @@ typedef void (^IMWebViewCallback)();
  */
 - (void)runWithCallback:(IMWebViewCallback)callback;
 
-
+/**
+ Navigates forward if possible.
+ */
 - (void)goForward;
+
+/**
+ Navigates back if possible
+ */
 - (void)goBack;
+
+/**
+ Clicks the first element found using the given selector
+ 
+ @param selector The selector of the element to click
+ 
+ @return Whether the selector actually existed.
+ */
 - (BOOL)clickElementWithSelector:(NSString *)selector;
-//- (BOOL)clickLabel:(NSString *)label;
-//- (BOOL)clickLabel:(NSString *)label withTag:(NSString *)tag;
+
+/**
+ Clicks the first element found using the given selector and the specified content
+ 
+ @param selector The selector of the element to click
+ @param content The content the element should have
+ 
+ @return Whether the selector actually existed.
+ */
+- (BOOL)clickElementWithSelector:(NSString *)selector andContent:(NSString *)content;
+
+/**
+ Click the first element that containts the specified content.
+ 
+ For example, if there's a button with the content of "Login", you could call
+ [imWebView clickElementWithContent:@"Login"] to click it.
+ 
+ @param content The content the element should have
+ */
+- (void)clickElementWithContent:(NSString *)content;
 
 /**
  Fills a textfield or textarea with the given text.
@@ -98,8 +128,13 @@ typedef void (^IMWebViewCallback)();
  */
 - (BOOL)setSelectWithSelector:(NSString *)selector toValue:(NSString *)value;
 
-- (BOOL)fillFormWithSelector:(NSString *)selector options:(NSDictionary *)options submit:(BOOL)submit;
-
+/**
+ Retrieves the content of the given selector on the current page.
+ 
+ @param selector The selector to query
+ 
+ @return The HTML content of the selector
+ */
 - (NSString *)getHTMLInSelector:(NSString *)selector;
 
 @end
