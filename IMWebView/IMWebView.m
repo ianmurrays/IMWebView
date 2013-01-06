@@ -345,7 +345,7 @@ typedef enum
 
 - (void)webViewDidStartLoad:(UIWebView *)webView
 {
-    NSLog(@"IMWebView stared loading");
+    NSLog(@"IMWebView started loading");
 }
 
 @end
