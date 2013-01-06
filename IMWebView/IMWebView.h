@@ -8,7 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-typedef void (^IMWebViewCallback)();
+@class IMWebView;
+
+typedef void (^IMWebViewSimpleCallback)();
+typedef void (^IMWebViewCallback)(IMWebView *webView);
 
 @interface IMWebView : NSObject
 

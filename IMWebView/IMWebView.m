@@ -8,6 +8,8 @@
 
 #import "IMWebView.h"
 
+#define CleanCallback() callback = (callback == nil ? ^(IMWebView *webView){} : callback);
+
 /**
  Defines operation types to enqueue
  */
@@ -32,8 +34,6 @@ typedef enum
 } IMWebViewInputType;
 
 @interface IMWebView () <UIWebViewDelegate>
-
-@property (nonatomic,copy) IMWebViewCallback callbackBlock;
 
 /**
  Unlike what the name might suggest, this holds a list of operations,
@@ -81,15 +81,14 @@ typedef enum
 - (void)startWithURL:(NSURL *)url withCallback:(IMWebViewCallback)callback
 {
     // Create an empty block in case we're passed nil.
-    callback = (callback == nil ? ^{} : callback);
+    CleanCallback();
     
     [self enqueueOperation:IMWebViewOperationNavigate withOptions:@{@"url" : url, @"block" : [callback copy]}];
 }
 
 - (void)thenExecuteBlock:(IMWebViewCallback)callback
 {
-    // Create an empty block in case we're passed nil.
-    callback = (callback == nil ? ^{} : callback);
+    CleanCallback();
     
     [self enqueueOperation:IMWebViewOperationExecuteBlock withOptions:@{@"block" : [callback copy]}];
 }
@@ -97,7 +96,7 @@ typedef enum
 - (void)runWithCallback:(IMWebViewCallback)callback
 {
     // Create an empty block in case we're passed nil.
-    callback = (callback == nil ? ^{} : callback);
+    CleanCallback();
     
     [self enqueueOperation:IMWebViewOperationRun withOptions:@{@"block" : [callback copy]}];
     
@@ -278,7 +277,7 @@ typedef enum
     [self.webView stringByEvaluatingJavaScriptFromString:scriptToInject];
 }
 
-- (void)pollForState:(NSString *)state withCallback:(IMWebViewCallback)callback
+- (void)pollForState:(NSString *)state withCallback:(IMWebViewSimpleCallback)callback
 {
     // FIXME: if we never inject jquery we'll get trapped in a recursion loop.
     if ([@"true" caseInsensitiveCompare:[self.webView stringByEvaluatingJavaScriptFromString:state]] == NSOrderedSame)
@@ -296,7 +295,7 @@ typedef enum
     }
 }
 
-- (void)injectJqueryWithCallBack:(IMWebViewCallback)callback
+- (void)injectJqueryWithCallBack:(IMWebViewSimpleCallback)callback
 {
     [self injectScriptWithName:@"inject-jquery"];
     
@@ -324,18 +323,6 @@ typedef enum
     return self.webView.request.URL;
 }
 
-- (void)setCallbackBlock:(IMWebViewCallback)callbackBlock
-{
-    if (callbackBlock == nil)
-    {
-        _callbackBlock = ^{};
-    }
-    else
-    {
-        _callbackBlock = [callbackBlock copy];
-    }
-}
-
 #pragma mark - UIWebView Delegate
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
@@ -352,7 +339,7 @@ typedef enum
         [self.operationsQueue removeObjectAtIndex:0];
         
         IMWebViewCallback callback = operation[@"options"][@"block"];
-        callback();
+        callback(self);
     }];
 }
 

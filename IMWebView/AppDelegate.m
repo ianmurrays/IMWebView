@@ -28,18 +28,18 @@
     self.webView.webView.frame = self.window.bounds;
     [self.window addSubview:self.webView.webView];
 
-    [self.webView startWithURL:[NSURL URLWithString:@"http://example.com"] withCallback:^{
-        [self.webView fillFieldWithSelector:@"input#user_email" withValue:@"email@example.com"];
-        [self.webView fillFieldWithSelector:@"input#user_password" withValue:@"password"];
-        [self.webView clickElementWithContent:@"Sign in"];
+    [self.webView startWithURL:[NSURL URLWithString:@"http://example.com"] withCallback:^(IMWebView *webView) {
+        [webView fillFieldWithSelector:@"input#user_email" withValue:@"email@example.com"];
+        [webView fillFieldWithSelector:@"input#user_password" withValue:@"password"];
+        [webView clickElementWithContent:@"Sign in"];
     }];
     
-    [self.webView thenExecuteBlock:^{
-        [self.webView clickElementWithSelector:@"a.group" andContent:@"Link"];
+    [self.webView thenExecuteBlock:^(IMWebView *webView) {
+        [webView clickElementWithSelector:@"a.group" andContent:@"Link"];
     }];
     
-    [self.webView runWithCallback:^{
-        NSLog(@"Finished: %@", [self.webView getHTMLInSelector:@"html"]);
+    [self.webView runWithCallback:^(IMWebView *webView) {
+        NSLog(@"Finished: %@", [webView getHTMLInSelector:@"html"]);
     }];
     
     [self.window makeKeyAndVisible];
