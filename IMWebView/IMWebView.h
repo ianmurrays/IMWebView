@@ -8,6 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ When this is true, IMWebView will crash in case the internal
+ web view navigated somewhere and there was no operation to perform.
+ Useful for development, you should probably set this to 0 on production.
+ */
+#define ASSERT_OPERATION_QUEUE_NOT_EMPTY 1
+
 @class IMWebView;
 
 typedef void (^IMWebViewSimpleCallback)();

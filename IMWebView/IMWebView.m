@@ -334,12 +334,18 @@ typedef enum
 {
     NSLog(@"IMWebView finished loading %@", self.currentURL);
     [self injectJqueryWithCallBack:^{
-        // Execute the first operation on the queue
-        NSDictionary *operation = self.operationsQueue[0];
-        [self.operationsQueue removeObjectAtIndex:0];
+        if (ASSERT_OPERATION_QUEUE_NOT_EMPTY)
+            NSAssert1(self.operationsQueue.count > 0, @"The operation queue was empty when the web view navigated to %@.", self.currentURL);
         
-        IMWebViewCallback callback = operation[@"options"][@"block"];
-        callback(self);
+        if (self.operationsQueue.count > 0)
+        {
+            // Execute the first operation on the queue
+            NSDictionary *operation = self.operationsQueue[0];
+            [self.operationsQueue removeObjectAtIndex:0];
+            
+            IMWebViewCallback callback = operation[@"options"][@"block"];
+            callback(self);
+        }
     }];
 }
 
