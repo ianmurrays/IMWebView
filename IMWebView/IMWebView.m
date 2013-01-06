@@ -78,7 +78,7 @@ typedef enum
 
 #pragma mark - Navigation
 
-- (void)startWithURL:(NSURL *)url withCallback:(IMWebViewCallback)callback
+- (void)startWithURL:(NSURL *)url withCallback:(IMWebViewOperationCallback)callback
 {
     // Create an empty block in case we're passed nil.
     CleanCallback();
@@ -86,14 +86,14 @@ typedef enum
     [self enqueueOperation:IMWebViewOperationNavigate withOptions:@{@"url" : url, @"block" : [callback copy]}];
 }
 
-- (void)thenExecuteBlock:(IMWebViewCallback)callback
+- (void)thenExecuteBlock:(IMWebViewOperationCallback)callback
 {
     CleanCallback();
     
     [self enqueueOperation:IMWebViewOperationExecuteBlock withOptions:@{@"block" : [callback copy]}];
 }
 
-- (void)runWithCallback:(IMWebViewCallback)callback
+- (void)runWithCallback:(IMWebViewOperationCallback)callback
 {
     // Create an empty block in case we're passed nil.
     CleanCallback();
@@ -305,7 +305,7 @@ typedef enum
     }];
 }
 
-- (void)injectDocumentReadinessScriptWithCallback:(IMWebViewCallback)callback
+- (void)injectDocumentReadinessScriptWithCallback:(IMWebViewOperationCallback)callback
 {
     [self injectScriptWithName:@"document-readiness"];
     [self pollForState:@"document.IMWebViewDocumentReady" withCallback:callback];
@@ -343,7 +343,7 @@ typedef enum
             NSDictionary *operation = self.operationsQueue[0];
             [self.operationsQueue removeObjectAtIndex:0];
             
-            IMWebViewCallback callback = operation[@"options"][@"block"];
+            IMWebViewOperationCallback callback = operation[@"options"][@"block"];
             callback(self);
         }
     }];

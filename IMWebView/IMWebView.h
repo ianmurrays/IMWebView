@@ -18,7 +18,7 @@
 @class IMWebView;
 
 typedef void (^IMWebViewSimpleCallback)();
-typedef void (^IMWebViewCallback)(IMWebView *webView);
+typedef void (^IMWebViewOperationCallback)(IMWebView *webView);
 
 @interface IMWebView : NSObject
 
@@ -40,7 +40,7 @@ typedef void (^IMWebViewCallback)(IMWebView *webView);
  @param url The url from where to start
  @param callback The callback to invoke when the DOM is ready.
  */
-- (void)startWithURL:(NSURL *)url withCallback:(IMWebViewCallback)callback;
+- (void)startWithURL:(NSURL *)url withCallback:(IMWebViewOperationCallback)callback;
 
 /**
  You can call this consecutively to enqueue operations. You should call this
@@ -49,7 +49,7 @@ typedef void (^IMWebViewCallback)(IMWebView *webView);
  
  @param callback The callback to invoke when the DOM is ready.
  */
-- (void)thenExecuteBlock:(IMWebViewCallback)callback;
+- (void)thenExecuteBlock:(IMWebViewOperationCallback)callback;
 
 /**
  Call this when all your operations have been enqueued. This will
@@ -57,7 +57,7 @@ typedef void (^IMWebViewCallback)(IMWebView *webView);
  
  @param callback Invoked when all operations have finished executing.
  */
-- (void)runWithCallback:(IMWebViewCallback)callback;
+- (void)runWithCallback:(IMWebViewOperationCallback)callback;
 
 /**
  Navigates forward if possible.
