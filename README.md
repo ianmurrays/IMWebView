@@ -10,6 +10,7 @@ No examples for now, but the header file should explain enough.
 
 ## What needs to be done?
 
+  - CocoaPod
   - Tests
   - Documentation & Examples
 
