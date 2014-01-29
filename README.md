@@ -11,6 +11,7 @@ No examples for now, but the header file should explain enough.
 ## What needs to be done?
 
   - CocoaPod
+  - Cleanup the folder hierachy (turn this into a more organized library).
   - Tests
   - Documentation & Examples
 
